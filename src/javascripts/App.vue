@@ -4,11 +4,10 @@
       <img class="logo" src="../images/logo.jpg" alt="ロゴ">
       <span class="sample">Sample code</span>
     </p>
-    <MyComponent :message="$data.message" />
-    <form @submit="onSubmit">
-      <input v-model="$data.text" type="text">
-      <button type="submit">送信</button>
-    </form>
+    <MessageBox
+      :message="$data.message"
+      :sendMessage="sendMessage"
+    />
   </div>
 </template>
 
@@ -16,16 +15,19 @@
 import socket from './utils/socket';
 
 // components
-import MyComponent from './components/MyComponent.vue';
+import MessageBox from './components/MessageBox.vue';
+import MessageLog from './components/MessageLog.vue';
 
 export default {
   components: {
-    MyComponent
+    MessageBox,
+    MessageLog
   },
   data() {
     return {
-      message: '',
-      text: ''
+      message: {},
+      text: '',
+      messages: [],
     };
   },
   created() {
@@ -37,14 +39,14 @@ export default {
       console.log(message);
       this.$data.message = message;
     });
+
+    socket.on('loadMessages', (messages) => {
+      this.$data.messages = messages;
+    });
   },
   methods: {
-    /**
-     * Enterボタンを押したとき
-     */
-    onSubmit(e) {
-      e.preventDefault();
-      socket.emit('send', this.$data.text);
+    sendMessage(message) {
+      socket.emit('send', message);
     }
   }
 };
