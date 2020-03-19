@@ -1,7 +1,7 @@
 <template>
   <div>
-    {{ $props.message }}
-    <form @submit="createMessage">
+    <span style="color:red;">{{$data.error}}</span>
+    <form @submit="handleSubmit">
       <span>
         名前: <input v-model="$data.name" type="text">
       </span>
@@ -25,24 +25,39 @@ moment.tz.setDefault('Asia/Tokyo');
 
 export default {
   props: {
-    message: VueTypes.object.isRequired,
     sendMessage: VueTypes.func.isRequired
   },
   data() {
     return {
       name: '',
       text: '',
+      error: '',
     };
   },
   methods: {
-    createMessage(e) {
+    handleSubmit(e) {
       e.preventDefault();
+      if (
+        this.$data.name === '' ||
+        this.$data.text === ''
+      ) {
+        this.$data.error =
+        '名前とテキストのフィールド両方で何かを入力してください';
+      } else {
+        this.createMessage();
+      }
+    },
+    createMessage() {
       const message = {
         name: this.$data.name,
         text: this.$data.text,
         time: moment().format('YYYY/MM/DD HH:mm:ss'),
       };
       this.sendMessage(message);
+
+      this.$data.name = '';
+      this.$data.text = '';
+      this.$data.error = '';
     }
   }
 };

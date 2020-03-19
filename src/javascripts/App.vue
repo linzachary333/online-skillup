@@ -2,11 +2,19 @@
   <div>
     <p>
       <img class="logo" src="../images/logo.jpg" alt="ロゴ">
-      <span class="sample">Sample code</span>
     </p>
+    <button type="submit" @click="toggleParticipants">
+      参加者表示
+    </button>
+    <template v-if="displayParticipants">
+      <p class="preformatted">{{getParticipantList}}</p>
+    </template>
+
     <MessageBox
-      :message="$data.message"
       :sendMessage="sendMessage"
+    />
+    <messageLog
+      :messages="messages"
     />
   </div>
 </template>
@@ -25,19 +33,14 @@ export default {
   },
   data() {
     return {
-      message: {},
-      text: '',
       messages: [],
+      participants: [],
+      displayParticipants: false
     };
   },
   created() {
-    socket.on('connect', () => {
-      console.log('connected!');
-    });
-
-    socket.on('send', (message) => {
-      console.log(message);
-      this.$data.message = message;
+    socket.on('updateParticipants', (participants) => {
+      this.$data.participants = participants;
     });
 
     socket.on('loadMessages', (messages) => {
@@ -45,8 +48,22 @@ export default {
     });
   },
   methods: {
+    toggleParticipants() {
+      this.$data.displayParticipants = !this.$data.displayParticipants;
+    },
     sendMessage(message) {
       socket.emit('send', message);
+    },
+  },
+  computed: {
+    getParticipantList: function() {
+      let participantList = '';
+      let count = 1;
+      for (const participant of this.$data.participants) {
+        participantList += `${count}:${participant.user}\n`;
+        count++;
+      }
+      return participantList;
     }
   }
 };
@@ -55,6 +72,10 @@ export default {
 <style lang="scss" scoped>
 .logo {
   width: 40px;
+}
+
+.preformatted {
+  white-space: pre;
 }
 
 .sample {

@@ -39,15 +39,20 @@ const server = app.listen(process.env.PORT || 4000, '0.0.0.0', () => {
 const io = require('socket.io')(server, { origins: '*:*' });
 
 let messages = [];
+let participants = [];
 
 // socketイベントの設定
 io.on('connection', (socket) => {
   console.log('connected:', socket.id);
-  io.to(socket.id).emit('loadMessages', messages);
+  initialize(socket);
 
   // 切断時
   socket.on('disconnect', () => {
     console.log('disconnected:', socket.id);
+    _.remove(participants, (participant) => {
+      return participant.user === socket.id;
+    });
+    io.emit('updateParticipants', participants);
   });
 
   // ユーザの参加
@@ -55,11 +60,21 @@ io.on('connection', (socket) => {
     console.log('send:', message);
 
     messages.push({
-      message,
+      ...message,
       id: _.uniqueId(),
     });
 
     if (messages.length > 50) messages.shift();
-    io.emit('send', message);
+    io.emit('loadMessages', messages);
   });
 });
+
+const initialize = (socket) => {
+  io.to(socket.id).emit('loadMessages', messages);
+
+  participants.push({
+    user: socket.id,
+    id: _.uniqueId(),
+  });
+  io.emit('updateParticipants', participants);
+};
