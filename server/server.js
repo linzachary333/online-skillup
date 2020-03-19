@@ -4,6 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const _ = require('lodash');
+
 // タイムゾーンを設定する
 const moment = require('moment');
 require('moment-timezone');
@@ -36,9 +38,12 @@ const server = app.listen(process.env.PORT || 4000, '0.0.0.0', () => {
 // socketサーバーを立ち上げる
 const io = require('socket.io')(server, { origins: '*:*' });
 
+let messages = [];
+
 // socketイベントの設定
 io.on('connection', (socket) => {
   console.log('connected:', socket.id);
+  io.to(socket.id).emit('loadMessages', messages);
 
   // 切断時
   socket.on('disconnect', () => {
@@ -48,6 +53,13 @@ io.on('connection', (socket) => {
   // ユーザの参加
   socket.on('send', (message) => {
     console.log('send:', message);
+
+    messages.push({
+      message,
+      id: _.uniqueId(),
+    });
+
+    if (messages.length > 50) messages.shift();
     io.emit('send', message);
   });
 });
