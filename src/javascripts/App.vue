@@ -12,6 +12,7 @@
 
     <MessageBox
       :sendMessage="sendMessage"
+      :userId="userId"
     />
     <messageLog
       :messages="messages"
@@ -35,7 +36,8 @@ export default {
     return {
       messages: [],
       participants: [],
-      displayParticipants: false
+      displayParticipants: false,
+      userId: '',
     };
   },
   created() {
@@ -45,6 +47,10 @@ export default {
 
     socket.on('loadMessages', (messages) => {
       this.$data.messages = messages;
+    });
+
+    socket.on('loadUserId', (userId) => {
+      this.$data.userId = userId;
     });
   },
   methods: {

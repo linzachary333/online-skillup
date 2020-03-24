@@ -38,8 +38,8 @@ const server = app.listen(process.env.PORT || 4000, '0.0.0.0', () => {
 // socketサーバーを立ち上げる
 const io = require('socket.io')(server, { origins: '*:*' });
 
-let messages = [];
-let participants = [];
+const messages = [];
+const participants = [];
 
 // socketイベントの設定
 io.on('connection', (socket) => {
@@ -71,6 +71,7 @@ io.on('connection', (socket) => {
 
 const initialize = (socket) => {
   io.to(socket.id).emit('loadMessages', messages);
+  io.to(socket.id).emit('loadUserId', socket.id);
 
   participants.push({
     user: socket.id,

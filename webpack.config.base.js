@@ -64,6 +64,10 @@ module.exports = {
         ]
       },
       {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
+      {
         test: /\.(eot|ttf|woff|woff2)$/,
         use: {
           loader: 'file-loader',
@@ -73,7 +77,7 @@ module.exports = {
             publicPath: (url) => './fonts/' + url
           }
         }
-      }
+      },
     ]
   },
   resolve: {
