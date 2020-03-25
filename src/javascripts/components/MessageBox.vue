@@ -8,9 +8,9 @@
       <span>
         テキスト: <input v-model="$data.text" type="text">
       </span>
-      <button type="submit">
+      <v-btn type="submit">
         送信
-      </button>
+      </v-btn>
     </form>
 
   </div>
@@ -25,7 +25,8 @@ moment.tz.setDefault('Asia/Tokyo');
 
 export default {
   props: {
-    sendMessage: VueTypes.func.isRequired
+    sendMessage: VueTypes.func.isRequired,
+    userId: VueTypes.string.isRequired,
   },
   data() {
     return {
@@ -52,6 +53,7 @@ export default {
         name: this.$data.name,
         text: this.$data.text,
         time: moment().format('YYYY/MM/DD HH:mm:ss'),
+        userId: this.$props.userId
       };
       this.sendMessage(message);
 
