@@ -1,23 +1,34 @@
 <template>
-  <div>
-    <p>
-      <img class="logo" src="../images/logo.jpg" alt="ロゴ">
-    </p>
-    <button type="submit" @click="toggleParticipants">
-      参加者表示
-    </button>
-    <template v-if="displayParticipants">
-      <p class="preformatted">{{getParticipantList}}</p>
-    </template>
-
-    <MessageBox
-      :sendMessage="sendMessage"
-      :userId="userId"
-    />
-    <messageLog
-      :messages="messages"
-    />
-  </div>
+  <v-app>
+    <div>
+    <!--
+        <p>
+          <img class="logo" src="../images/logo.jpg" alt="ロゴ">
+        </p>
+        <v-btn
+        type="submit"
+        @click="toggleParticipants"
+        >
+        参加者表示
+      </v-btn>
+      <template v-if="displayParticipants">
+        <p class="preformatted">{{getParticipantList}}</p>
+      </template>
+      <Navbar
+        :getParticipantList="getParticipantList"
+      />
+    -->
+      <MessageLog
+        :messages="messages"
+        :userId="userId"
+      />
+      <MessageBox
+      class="messageBox"
+        :sendMessage="sendMessage"
+        :userId="userId"
+      />
+    </div>
+  </v-app>
 </template>
 
 <script>
@@ -26,17 +37,18 @@ import socket from './utils/socket';
 // components
 import MessageBox from './components/MessageBox.vue';
 import MessageLog from './components/MessageLog.vue';
+import Navbar from './components/Navbar.vue';
 
 export default {
   components: {
     MessageBox,
-    MessageLog
+    MessageLog,
+    Navbar
   },
   data() {
     return {
       messages: [],
       participants: [],
-      displayParticipants: false,
       userId: '',
     };
   },
@@ -54,9 +66,6 @@ export default {
     });
   },
   methods: {
-    toggleParticipants() {
-      this.$data.displayParticipants = !this.$data.displayParticipants;
-    },
     sendMessage(message) {
       socket.emit('send', message);
     },
@@ -76,9 +85,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.logo {
-  width: 40px;
-}
 
 .preformatted {
   white-space: pre;
@@ -86,5 +92,9 @@ export default {
 
 .sample {
   color: $red;
+}
+
+.messageBox {
+  width: 100%;
 }
 </style>
