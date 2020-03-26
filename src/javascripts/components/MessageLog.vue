@@ -3,7 +3,7 @@
     <template v-for="message in messages">
       <v-card
         class="textbox"
-        v-bind:class="{yourMessage: message.userId === userId}"
+        :class="{yourMessage: message.userId === userId}"
         shaped
         :key="message.key"
       >
