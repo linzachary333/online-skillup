@@ -40,6 +40,11 @@ const io = require('socket.io')(server, { origins: '*:*' });
 
 const messages = [];
 const participants = [];
+const serverId = _.uniqueId();
+const systemMessage = {
+  CONNECT: 'connect',
+  DISCONNECT: 'disconnect',
+};
 
 // socketイベントの設定
 io.on('connection', (socket) => {
@@ -53,23 +58,23 @@ io.on('connection', (socket) => {
       return participant.user === socket.id;
     });
     io.emit('updateParticipants', participants);
+    createSystemMessage(systemMessage.DISCONNECT);
   });
 
   // ユーザの参加
   socket.on('send', (message) => {
     console.log('send:', message);
-
     messages.push({
       ...message,
       id: _.uniqueId(),
     });
-
     if (messages.length > 50) messages.shift();
     io.emit('loadMessages', messages);
   });
 });
 
 const initialize = (socket) => {
+  createSystemMessage(systemMessage.CONNECT);
   io.to(socket.id).emit('loadMessages', messages);
   io.to(socket.id).emit('loadUserId', socket.id);
 
@@ -78,4 +83,25 @@ const initialize = (socket) => {
     id: _.uniqueId(),
   });
   io.emit('updateParticipants', participants);
+};
+
+const createSystemMessage = (type) => {
+  const message = {
+    name: 'SERVER',
+    time: moment().format('YYYY/MM/DD HH:mm:ss'),
+    userId: serverId,
+    id: _.uniqueId(),
+  };
+  switch (type) {
+    case systemMessage.CONNECT:
+      message.text = 'ユーザが参加しました。';
+      break;
+    case systemMessage.DISCONNECT:
+      message.text = 'ユーザが退去しました。';
+      break;
+    default:
+      return;
+  }
+  messages.push(message);
+  io.emit('loadMessages', messages);
 };

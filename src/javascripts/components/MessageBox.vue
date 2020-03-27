@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="outerContainer">
     <form @submit="handleSubmit">
-      <v-container class="grey lighten-5">
+      <v-container class="grey lighten-5 innerContainer">
         <v-row>
           <v-col cols="12" sm="3">
             <v-text-field
@@ -18,6 +18,7 @@
               rows="3"
               row-height="20"
               v-model="$data.text"
+              background-color="white"
               type="text"
             />
           </v-col>
@@ -88,6 +89,16 @@ export default {
 
 <style lang="scss" scoped>
 
+.outerContainer {
+  position: fixed;
+  bottom: 0;
+}
+
+.innerContainer {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 #button {
   background-color: #8ecee6;
   height: 50%;
@@ -101,5 +112,4 @@ export default {
   font-weight: bold;
   color: red;
 }
-
 </style>

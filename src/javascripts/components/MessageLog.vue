@@ -43,6 +43,21 @@ export default {
 .container {
   overflow-y: auto;
   height: 70vh;
+  border-top: ridge;
+}
+
+@media (min-height: 850px) {
+  .container {
+    height: 80vh;
+  }
+}
+
+.v-card__title {
+  padding-top: 3px;
+}
+
+.v-card__subtitle {
+  padding-bottom: 0;
 }
 
 .textbox {
@@ -58,5 +73,7 @@ export default {
 .yourMessage {
   background-image: linear-gradient(#b7ea6f, #8bd544);
   float: right;
+  margin-top: 0;
 }
+
 </style>
