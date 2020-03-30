@@ -1,19 +1,17 @@
 <template>
-  <div>
+  <div class="navContainer">
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant.sync="mini"
       id="drawer"
-      :class="{floatLeft: displayParticipants === true}"
       permanent
       expand-on-hover
+      class="floatLeft"
     >
       <v-list-item class="px-2">
         <img class="logo" src="../../images/logo.jpg" alt="ロゴ">
 
-        <v-list-item-title
-          class="title"
-        >
+        <v-list-item-title class="title">
             チームラボ課題
         </v-list-item-title>
 
@@ -29,9 +27,9 @@
 
           <v-list-item-content>
             <v-btn
-            type="submit"
-            @click="toggleParticipants"
-            id="button"
+              type="submit"
+              @click="toggleParticipants"
+              id="button"
             >
             参加者表示
           </v-btn>
@@ -83,16 +81,23 @@ export default {
 
 <style lang="scss" scoped>
 //
+
+.navContainer {
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+}
+
+.floatLeft {
+  float: left;
+}
+
 .logo {
   width: 40px;
 }
 
 .title {
   text-align: center;
-}
-
-.floatLeft {
-  float: left;
 }
 
 .pointer:hover {

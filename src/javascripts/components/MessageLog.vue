@@ -39,16 +39,14 @@ export default {
 
 <style lang="scss" scoped>
 //
-
 .container {
   overflow-y: auto;
-  height: 70vh;
-  border-top: ridge;
+  height: 85vh;
 }
 
 @media (min-height: 850px) {
   .container {
-    height: 80vh;
+    height: 90vh;
   }
 }
 
