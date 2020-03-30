@@ -1,31 +1,19 @@
 <template>
   <v-app>
     <div>
-    <!--
-        <p>
-          <img class="logo" src="../images/logo.jpg" alt="ロゴ">
-        </p>
-        <v-btn
-        type="submit"
-        @click="toggleParticipants"
-        >
-        参加者表示
-      </v-btn>
-      <template v-if="displayParticipants">
-        <p class="preformatted">{{getParticipantList}}</p>
-      </template>
       <Navbar
         :getParticipantList="getParticipantList"
       />
-    -->
       <MessageLog
+        id="messageLog"
         :messages="messages"
         :userId="userId"
       />
       <MessageBox
-      class="messageBox"
+        class="messageBox"
         :sendMessage="sendMessage"
         :userId="userId"
+        @messageSent="scrollToBottom"
       />
     </div>
   </v-app>
@@ -69,14 +57,16 @@ export default {
     sendMessage(message) {
       socket.emit('send', message);
     },
+    scrollToBottom() {
+      const messageLog = document.getElementById('messageLog');
+      messageLog.scrollTop = messageLog.scrollHeight - messageLog.clientHeight;
+    }
   },
   computed: {
     getParticipantList: function() {
       let participantList = '';
-      let count = 1;
       for (const participant of this.$data.participants) {
-        participantList += `${count}:${participant.user}\n`;
-        count++;
+        participantList += `${participant.user}\n`;
       }
       return participantList;
     }
