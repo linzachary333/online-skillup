@@ -5,6 +5,7 @@
         :getParticipantList="getParticipantList"
       />
       <MessageLog
+        id="messageLog"
         :messages="messages"
         :userId="userId"
       />
@@ -12,6 +13,7 @@
         class="messageBox"
         :sendMessage="sendMessage"
         :userId="userId"
+        @messageSent="scrollToBottom"
       />
     </div>
   </v-app>
@@ -55,6 +57,10 @@ export default {
     sendMessage(message) {
       socket.emit('send', message);
     },
+    scrollToBottom() {
+      const messageLog = document.getElementById('messageLog');
+      messageLog.scrollTop = messageLog.scrollHeight - messageLog.clientHeight;
+    }
   },
   computed: {
     getParticipantList: function() {

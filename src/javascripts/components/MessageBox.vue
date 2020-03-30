@@ -67,6 +67,7 @@ export default {
         '名前とテキストのフィールド両方で入力してください';
       } else {
         this.createMessage();
+        this.$emit('messageSent');
       }
     },
     createMessage() {
