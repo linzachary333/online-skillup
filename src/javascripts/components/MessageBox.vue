@@ -70,16 +70,14 @@ export default {
         this.$emit('messageSent');
       }
     },
-    createMessage() {
-      console.log(this.$data.text);
+    async createMessage() {
       const message = {
         name: this.$data.name,
         text: this.$data.text,
         time: moment().format('YYYY/MM/DD HH:mm:ss'),
         userId: this.$props.userId
       };
-      this.sendMessage(message);
-
+      await this.sendMessage(message);
       this.$data.name = '';
       this.$data.text = '';
       this.$data.error = '';
