@@ -29,6 +29,7 @@
             >
             送信
             </v-btn>
+            <h5 class="reminder">Ctrl+Enterで送信できる</h5>
           </v-col>
         </v-row>
 
@@ -49,16 +50,24 @@ export default {
     sendMessage: VueTypes.func.isRequired,
     userId: VueTypes.string.isRequired,
   },
+  mounted() {
+    window.addEventListener('keypress', e => {
+      if ((e.ctrlKey || e.metaKey) && (e.keyCode === 13 || e.keyCode === 10)) {
+        this.handleSubmit(e);
+      }
+    });
+  },
   data() {
     return {
       name: '',
       text: '',
       error: '',
+      chip: true,
     };
   },
   methods: {
     handleSubmit(e) {
-      e.preventDefault();
+      if (typeof e !== 'undefined') e.preventDefault();
       if (
         this.$data.name === '' ||
         this.$data.text === ''
@@ -66,31 +75,30 @@ export default {
         this.$data.error =
         '名前とテキストのフィールド両方で入力してください';
       } else {
-        this.createMessage();
         this.$emit('messageSent');
+        this.createMessage();
       }
     },
-    async createMessage() {
+    createMessage() {
       const message = {
         name: this.$data.name,
         text: this.$data.text,
         time: moment().format('YYYY/MM/DD HH:mm:ss'),
         userId: this.$props.userId
       };
-      await this.sendMessage(message);
-      this.$data.name = '';
+      this.sendMessage(message);
       this.$data.text = '';
       this.$data.error = '';
-    }
+    },
   }
 };
 </script>
 
 <style lang="scss" scoped>
-
 .outerContainer {
   position: fixed;
   bottom: 0;
+  z-index: 2;
 }
 
 .innerContainer {
@@ -110,5 +118,10 @@ export default {
   display: block;
   font-weight: bold;
   color: red;
+}
+
+.reminder {
+  text-align: center;
+  padding-top: 10%;
 }
 </style>

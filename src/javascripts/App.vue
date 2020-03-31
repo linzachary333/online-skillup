@@ -8,12 +8,13 @@
         id="messageLog"
         :messages="messages"
         :userId="userId"
+        @messageLogUpdated="scrollIfUserSentMessage"
       />
       <MessageBox
         class="messageBox"
         :sendMessage="sendMessage"
         :userId="userId"
-        @messageSent="scrollToBottom"
+        @messageSent="userHasSentMessage"
       />
     </div>
   </v-app>
@@ -21,7 +22,6 @@
 
 <script>
 import socket from './utils/socket';
-
 // components
 import MessageBox from './components/MessageBox.vue';
 import MessageLog from './components/MessageLog.vue';
@@ -38,6 +38,7 @@ export default {
       messages: [],
       participants: [],
       userId: '',
+      userSentMessage: false,
     };
   },
   created() {
@@ -59,7 +60,16 @@ export default {
     },
     scrollToBottom() {
       const messageLog = document.getElementById('messageLog');
-      messageLog.scrollTop = messageLog.scrollHeight - messageLog.clientHeight;
+      messageLog.scrollTop = messageLog.scrollHeight;
+    },
+    userHasSentMessage() {
+      this.$data.userSentMessage = true;
+    },
+    scrollIfUserSentMessage() {
+      if (this.$data.userSentMessage) {
+        this.scrollToBottom();
+        this.$data.userSentMessage = false;
+      }
     }
   },
   computed: {
@@ -75,7 +85,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .preformatted {
   white-space: pre;
 }
