@@ -12,17 +12,9 @@
         <v-card-text class="cardText">
           {{message.text}}
         </v-card-text>
-        <template v-if="containsVideo(message.text)">
-          <youtube
-            v-for="(id, i) in videoIds(message.text)"
-            :key="i"
-            :video-id="id"
-            :player-vars="playerVars"
-            width="100%"
-            height="50%"
-          >
-          </youtube>
-        </template>
+        <VideoContainer
+          :messageText="message.text"
+        />
       </v-card>
     </template>
   </ul>
@@ -30,36 +22,18 @@
 
 <script>
 import VueTypes from 'vue-types';
+import VideoContainer from './VideoContainer.vue';
 
 export default {
+  components: {
+    VideoContainer,
+  },
   props: {
     messages: VueTypes.array.isRequired,
     userId: VueTypes.string.isRequired,
   },
-  data() {
-    return {
-      playerVars: {
-        autoplay: 0
-      },
-    };
-  },
-  methods: {
-    containsVideo(text) {
-      const matches = this.parseYoutubeLink(text);
-      return matches !== null;
-    },
-    videoIds: function(text) {
-      const matches = this.parseYoutubeLink(text);
-      const idList = [];
-      for (const match of matches) {
-        idList.push(match.substring(match.length - 11));
-      }
-      return idList;
-    },
-    parseYoutubeLink(text) {
-      const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/gi;
-      return text.match(regex);
-    }
+  updated() {
+    this.$emit('messageLogUpdated');
   },
   computed: {
     checkMessageId: function(messageId) {

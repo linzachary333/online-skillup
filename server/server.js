@@ -102,6 +102,6 @@ const createSystemMessage = (type) => {
     default:
       return;
   }
-  messages.push(message);
+  // messages.push(message);
   io.emit('loadMessages', messages);
 };

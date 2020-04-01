@@ -1,5 +1,5 @@
 <template>
-  <div class="outerContainer">
+  <div class="outerContainer" @keydown.enter="checkKeys">
     <form @submit="handleSubmit">
       <v-container class="grey lighten-5 innerContainer">
         <v-row>
@@ -29,6 +29,7 @@
             >
             送信
             </v-btn>
+            <h5 class="reminder">Ctrl+Enterで送信できる</h5>
           </v-col>
         </v-row>
 
@@ -58,7 +59,7 @@ export default {
   },
   methods: {
     handleSubmit(e) {
-      e.preventDefault();
+      if (typeof e !== 'undefined') e.preventDefault();
       if (
         this.$data.name === '' ||
         this.$data.text === ''
@@ -66,31 +67,36 @@ export default {
         this.$data.error =
         '名前とテキストのフィールド両方で入力してください';
       } else {
-        this.createMessage();
         this.$emit('messageSent');
+        this.createMessage();
       }
     },
-    async createMessage() {
+    createMessage() {
       const message = {
         name: this.$data.name,
         text: this.$data.text,
         time: moment().format('YYYY/MM/DD HH:mm:ss'),
         userId: this.$props.userId
       };
-      await this.sendMessage(message);
-      this.$data.name = '';
+      this.sendMessage(message);
       this.$data.text = '';
       this.$data.error = '';
+    },
+    checkKeys(e) {
+      if (e.keyCode !== 13) return;
+      if (e.metaKey === true || e.ctrlKey === true) {
+        this.handleSubmit(e);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-
 .outerContainer {
   position: fixed;
   bottom: 0;
+  z-index: 2;
 }
 
 .innerContainer {
@@ -110,5 +116,10 @@ export default {
   display: block;
   font-weight: bold;
   color: red;
+}
+
+.reminder {
+  text-align: center;
+  padding-top: 10%;
 }
 </style>
