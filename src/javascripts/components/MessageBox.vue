@@ -20,6 +20,7 @@
               v-model="$data.text"
               background-color="white"
               type="text"
+              @keydown.enter="checkKeys"
             />
           </v-col>
           <v-col class="col" cols="12" sm="2">
@@ -83,6 +84,7 @@ export default {
       this.$data.error = '';
     },
     checkKeys(e) {
+      e.preventDefault();
       if (e.keyCode !== 13) return;
       if (e.metaKey === true || e.ctrlKey === true) {
         this.handleSubmit(e);
