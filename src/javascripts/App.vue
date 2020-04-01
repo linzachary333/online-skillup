@@ -8,13 +8,13 @@
         id="messageLog"
         :messages="messages"
         :userId="userId"
-        @messageLogUpdated="scrollIfUserSentMessage"
+        @messageLogUpdated="scrollIfLocalUserSentMessage"
       />
       <MessageBox
         class="messageBox"
         :sendMessage="sendMessage"
         :userId="userId"
-        @messageSent="userHasSentMessage"
+        @messageSent="localUserHasSentMessage"
       />
     </div>
   </v-app>
@@ -38,7 +38,7 @@ export default {
       messages: [],
       participants: [],
       userId: '',
-      userSentMessage: false,
+      localUserSentMessage: false,
     };
   },
   created() {
@@ -62,13 +62,13 @@ export default {
       const messageLog = document.getElementById('messageLog');
       messageLog.scrollTop = messageLog.scrollHeight;
     },
-    userHasSentMessage() {
-      this.$data.userSentMessage = true;
+    localUserHasSentMessage() {
+      this.$data.localUserSentMessage = true;
     },
-    scrollIfUserSentMessage() {
-      if (this.$data.userSentMessage) {
+    scrollIfLocalUserSentMessage() {
+      if (this.$data.localUserSentMessage) {
         this.scrollToBottom();
-        this.$data.userSentMessage = false;
+        this.$data.localUserSentMessage = false;
       }
     }
   },

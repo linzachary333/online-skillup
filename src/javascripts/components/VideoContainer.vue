@@ -63,7 +63,7 @@ export default {
       if (matches === null) return 0;
       return matches.length;
     },
-    videoIds: function(text) {
+    videoIds(text) {
       const matches = this.parseYoutubeLink(text);
       const idList = [];
       for (const match of matches) {

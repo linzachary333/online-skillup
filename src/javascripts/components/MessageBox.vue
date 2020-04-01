@@ -1,5 +1,5 @@
 <template>
-  <div class="outerContainer">
+  <div class="outerContainer" @keydown.enter="checkKeys">
     <form @submit="handleSubmit">
       <v-container class="grey lighten-5 innerContainer">
         <v-row>
@@ -50,19 +50,11 @@ export default {
     sendMessage: VueTypes.func.isRequired,
     userId: VueTypes.string.isRequired,
   },
-  mounted() {
-    window.addEventListener('keypress', e => {
-      if ((e.ctrlKey || e.metaKey) && (e.keyCode === 13 || e.keyCode === 10)) {
-        this.handleSubmit(e);
-      }
-    });
-  },
   data() {
     return {
       name: '',
       text: '',
       error: '',
-      chip: true,
     };
   },
   methods: {
@@ -90,6 +82,12 @@ export default {
       this.$data.text = '';
       this.$data.error = '';
     },
+    checkKeys(e) {
+      if (e.keyCode !== 13) return;
+      if (e.metaKey === true || e.ctrlKey === true) {
+        this.handleSubmit(e);
+      }
+    }
   }
 };
 </script>
