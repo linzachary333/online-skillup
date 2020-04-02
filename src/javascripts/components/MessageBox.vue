@@ -1,5 +1,5 @@
 <template>
-  <div class="outerContainer" @keydown.enter="checkKeys">
+  <div @keydown.enter="checkKeys">
     <form @submit="handleSubmit">
       <v-container class="grey lighten-5 innerContainer">
         <v-row>
@@ -84,9 +84,9 @@ export default {
       this.$data.error = '';
     },
     checkKeys(e) {
-      e.preventDefault();
       if (e.keyCode !== 13) return;
       if (e.metaKey === true || e.ctrlKey === true) {
+        e.preventDefault();
         this.handleSubmit(e);
       }
     }
@@ -96,7 +96,7 @@ export default {
 
 <style lang="scss" scoped>
 .outerContainer {
-  position: fixed;
+  position: sticky;
   bottom: 0;
   z-index: 2;
 }

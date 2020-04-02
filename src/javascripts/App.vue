@@ -8,14 +8,26 @@
         id="messageLog"
         :messages="messages"
         :userId="userId"
-        @messageLogUpdated="scrollIfLocalUserSentMessage"
+        @messageLogUpdated="handleMessageLogUpdate"
+        @scroll.native="onScroll"
       />
-      <MessageBox
-        class="messageBox"
-        :sendMessage="sendMessage"
-        :userId="userId"
-        @messageSent="localUserHasSentMessage"
-      />
+      <div class="outerContainer">
+        <v-snackbar
+          class="snackbar"
+          v-model="snackbar"
+          :timeout="0"
+          @click="clickedSnackbar"
+        >
+          {{unreadMessages}} unread message(s).
+          <v-icon color="blue">mdi-close</v-icon>
+        </v-snackbar>
+        <MessageBox
+          class="messageBox"
+          :sendMessage="sendMessage"
+          :userId="userId"
+          @messageSent="localUserHasSentMessage"
+        />
+      </div>
     </div>
   </v-app>
 </template>
@@ -26,6 +38,8 @@ import socket from './utils/socket';
 import MessageBox from './components/MessageBox.vue';
 import MessageLog from './components/MessageLog.vue';
 import Navbar from './components/Navbar.vue';
+
+const debounce = require('lodash/debounce');
 
 export default {
   components: {
@@ -39,6 +53,9 @@ export default {
       participants: [],
       userId: '',
       localUserSentMessage: false,
+      snackbar: false,
+      unreadMessages: 0,
+      scrollBarAtBottom: false,
     };
   },
   created() {
@@ -48,6 +65,7 @@ export default {
 
     socket.on('loadMessages', (messages) => {
       this.$data.messages = messages;
+      this.checkIfScrollBarIsAtBottom();
     });
 
     socket.on('loadUserId', (userId) => {
@@ -61,16 +79,50 @@ export default {
     scrollToBottom() {
       const messageLog = document.getElementById('messageLog');
       messageLog.scrollTop = messageLog.scrollHeight;
+      this.$data.scrollAtBottom = true;
+      this.$data.unreadMessages = 0;
+    },
+    checkIfScrollBarIsAtBottom() {
+      const messageLog = document.getElementById('messageLog');
+      const {
+        scrollHeight,
+        scrollTop,
+        clientHeight
+      } = messageLog;
+      if (scrollHeight - scrollTop === clientHeight) {
+        this.$data.scrollBarAtBottom = true;
+      } else {
+        this.$data.scrollBarAtBottom = false;
+      }
+    },
+    handleMessageLogUpdate() {
+      if (this.$data.localUserSentMessage ||
+          this.$data.scrollBarAtBottom) {
+        this.scrollToBottom();
+        this.$data.snackbar = false;
+        this.$data.localUserSentMessage = false;
+      } else {
+        this.$data.snackbar = true;
+        if (this.$data.unreadMessages < this.$data.messages.length) {
+          this.$data.unreadMessages++;
+        }
+      }
     },
     localUserHasSentMessage() {
       this.$data.localUserSentMessage = true;
     },
-    scrollIfLocalUserSentMessage() {
-      if (this.$data.localUserSentMessage) {
-        this.scrollToBottom();
-        this.$data.localUserSentMessage = false;
+    clickedSnackbar() {
+      this.$data.snackbar = false;
+      this.$data.scrollBarAtBottom = true;
+      this.scrollToBottom();
+    },
+    onScroll: debounce(function() {
+      this.checkIfScrollBarIsAtBottom();
+      if (this.$data.scrollBarAtBottom) {
+        this.$data.snackbar = false;
+        this.$data.unreadMessages = 0;
       }
-    }
+    }, 100),
   },
   computed: {
     getParticipantList: function() {
@@ -95,5 +147,23 @@ export default {
 
 .messageBox {
   width: 100%;
+}
+
+.outerContainer {
+  position: fixed;
+  bottom: 0;
+  z-index: 2;
+  width: 100%;
+}
+
+.snackbar {
+  position: inherit;
+  transform: translateY(-100%);
+  bottom: auto;
+  cursor: pointer;
+}
+
+.snackbar p {
+  text-align: center;
 }
 </style>

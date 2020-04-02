@@ -48,12 +48,10 @@ const systemMessage = {
 
 // socketイベントの設定
 io.on('connection', (socket) => {
-  console.log('connected:', socket.id);
   initialize(socket);
 
   // 切断時
   socket.on('disconnect', () => {
-    console.log('disconnected:', socket.id);
     _.remove(participants, (participant) => {
       return participant.user === socket.id;
     });
@@ -63,7 +61,6 @@ io.on('connection', (socket) => {
 
   // ユーザの参加
   socket.on('send', (message) => {
-    console.log('send:', message);
     messages.push({
       ...message,
       id: _.uniqueId(),
@@ -102,6 +99,6 @@ const createSystemMessage = (type) => {
     default:
       return;
   }
-  // messages.push(message);
+  messages.push(message);
   io.emit('loadMessages', messages);
 };
