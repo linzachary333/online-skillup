@@ -37,8 +37,6 @@ import MessageLog from './components/MessageLog.vue';
 import Navbar from './components/Navbar.vue';
 import BottomContainer from './components/BottomContainer.vue';
 
-const debounce = require('lodash/debounce');
-
 export default {
   components: {
     MessageLog,
