@@ -9,6 +9,23 @@
       <BottomContainer
         :userId="userId"
       />
+      <div class="outerContainer">
+        <v-snackbar
+          class="snackbar"
+          v-model="snackbar"
+          :timeout="0"
+          @click="clickedSnackbar"
+        >
+          {{unreadMessages}} unread message(s).
+          <v-icon color="blue">mdi-close</v-icon>
+        </v-snackbar>
+        <MessageBox
+          class="messageBox"
+          :sendMessage="sendMessage"
+          :userId="userId"
+          @messageSent="localUserHasSentMessage"
+        />
+      </div>
     </div>
   </v-app>
 </template>
@@ -19,6 +36,8 @@ import socket from './utils/socket';
 import MessageLog from './components/MessageLog.vue';
 import Navbar from './components/Navbar.vue';
 import BottomContainer from './components/BottomContainer.vue';
+
+const debounce = require('lodash/debounce');
 
 export default {
   components: {

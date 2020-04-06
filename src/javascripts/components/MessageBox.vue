@@ -92,6 +92,7 @@ export default {
     checkKeys(e) {
       if (e.keyCode !== 13) return;
       if (e.metaKey === true || e.ctrlKey === true) {
+        e.preventDefault();
         this.handleSubmit(e);
       }
     },
