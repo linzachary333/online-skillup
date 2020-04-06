@@ -9,23 +9,6 @@
       <BottomContainer
         :userId="userId"
       />
-      <div class="outerContainer">
-        <v-snackbar
-          class="snackbar"
-          v-model="snackbar"
-          :timeout="0"
-          @click="clickedSnackbar"
-        >
-          {{unreadMessages}} unread message(s).
-          <v-icon color="blue">mdi-close</v-icon>
-        </v-snackbar>
-        <MessageBox
-          class="messageBox"
-          :sendMessage="sendMessage"
-          :userId="userId"
-          @messageSent="localUserHasSentMessage"
-        />
-      </div>
     </div>
   </v-app>
 </template>
