@@ -10,21 +10,16 @@
     >
       <v-list-item class="px-2">
         <img class="logo" src="../../images/logo.jpg" alt="ロゴ">
-
         <v-list-item-title class="title">
             チームラボ課題
         </v-list-item-title>
-
       </v-list-item>
-
       <v-divider></v-divider>
-
       <v-list dense>
         <v-list-item>
           <v-list-item-icon>
             <v-icon>mdi-account-group-outline</v-icon>
           </v-list-item-icon>
-
           <v-list-item-content>
             <v-btn
               type="submit"
@@ -46,23 +41,26 @@
       <v-card-text>
         <p class="preformatted"><b>{{getParticipantList}}</b></p>
       </v-card-text>
-  </v-card>
+    </v-card>
   </div>
 </template>
 
 <script>
-import VueTypes from 'vue-types';
+import socket from '../utils/socket';
 
 export default {
-  props: {
-    getParticipantList: VueTypes.string.isRequired,
-  },
   data() {
     return {
       drawer: true,
       mini: true,
       displayParticipants: false,
+      participants: [],
     };
+  },
+  created() {
+    socket.on('updateParticipants', (participants) => {
+      this.$data.participants = participants;
+    });
   },
   methods: {
     toggleParticipants() {
@@ -70,6 +68,13 @@ export default {
     }
   },
   computed: {
+    getParticipantList: function() {
+      let participantList = '';
+      for (const participant of this.$data.participants) {
+        participantList += `${participant.user}\n`;
+      }
+      return participantList;
+    },
     checkMessageId: function(messageId) {
       return {
         yourMessage: messageId === this.$props.userId
@@ -80,8 +85,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-//
-
 .navContainer {
   position: absolute;
   width: 100%;

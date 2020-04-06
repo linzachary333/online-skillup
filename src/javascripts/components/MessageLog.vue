@@ -1,5 +1,5 @@
 <template>
-  <ul class="container">
+  <ul class="container" @scroll.native="onScroll">
     <template v-for="message in messages">
       <v-card
         class="textbox"
@@ -21,21 +21,93 @@
 </template>
 
 <script>
+import { mapMutations, mapGetters } from 'vuex';
+import socket from '../utils/socket';
 import VueTypes from 'vue-types';
 import VideoContainer from './VideoContainer.vue';
+import { scrollToBottom } from '../utils/Utils.js';
+
+const debounce = require('lodash/debounce');
 
 export default {
   components: {
     VideoContainer,
   },
   props: {
-    messages: VueTypes.array.isRequired,
     userId: VueTypes.string.isRequired,
   },
+  data() {
+    return {
+      messages: [],
+    };
+  },
+  created() {
+    socket.on('loadMessages', (messages) => {
+      this.$data.messages = messages;
+      this.checkIfScrollBarIsAtBottom();
+    });
+  },
   updated() {
-    this.$emit('messageLogUpdated');
+    this.handleMessageLogUpdate();
+  },
+  methods: {
+    ...mapMutations([
+      'setSnackbar',
+      'setLocalUserSentMessage',
+      'setScrollBarAtBottom',
+      'incrementUnreadMessagesByOne',
+      'resetUnreadMessages',
+    ]),
+    handleMessageLogUpdate() {
+      if (this.getLocalUserSentMessage ||
+          this.getScrollBarAtBottom) {
+        scrollToBottom();
+        this.setScrollBarAtBottom(true);
+        this.resetUnreadMessages();
+        this.setSnackbar(false);
+        this.setLocalUserSentMessage(false);
+      } else {
+        this.setSnackbar(true);
+        if (this.getUnreadMessagesCount < this.$data.messages.length) {
+          this.incrementUnreadMessagesByOne();
+        }
+      }
+    },
+    scrollIfLocalUserSentMessage() {
+      if (this.getLocalUserSentMessage) {
+        scrollToBottom();
+        this.setScrollBarAtBottom(true);
+        this.resetUnreadMessages();
+        this.setLocalUserSentMessage(false);
+      }
+    },
+    onScroll: debounce(function() {
+      this.checkIfScrollBarIsAtBottom();
+      if (this.$data.scrollBarAtBottom) {
+        this.setSnackbar(false);
+        this.resetUnreadMessages();
+      }
+    }, 100),
+    checkIfScrollBarIsAtBottom() {
+      const messageLog = document.getElementById('messageLog');
+      const {
+        scrollHeight,
+        scrollTop,
+        clientHeight
+      } = messageLog;
+      if (scrollHeight - scrollTop === clientHeight) {
+        this.setScrollBarAtBottom(true);
+      } else {
+        this.setScrollBarAtBottom(false);
+      }
+    },
   },
   computed: {
+    ...mapGetters([
+      'getUnreadMessagesCount',
+      'getLocalUserSentMessage',
+      'getScrollBarAtBottom'
+    ]),
     checkMessageId: function(messageId) {
       return {
         yourMessage: messageId === this.$props.userId
@@ -49,12 +121,12 @@ export default {
 //
 .container {
   overflow-y: auto;
-  height: 85vh;
+  height: 80vh;
 }
 
 @media (min-height: 850px) {
   .container {
-    height: 90vh;
+    height: 88vh;
   }
 }
 

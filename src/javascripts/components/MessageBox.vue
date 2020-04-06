@@ -33,13 +33,14 @@
             <h5 class="reminder">Ctrl+Enterで送信できる</h5>
           </v-col>
         </v-row>
-
       </v-container>
     </form>
   </div>
 </template>
 
 <script>
+import { mapMutations, mapGetters } from 'vuex';
+import socket from '../utils/socket';
 import VueTypes from 'vue-types';
 
 const moment = require('moment');
@@ -48,7 +49,6 @@ moment.tz.setDefault('Asia/Tokyo');
 
 export default {
   props: {
-    sendMessage: VueTypes.func.isRequired,
     userId: VueTypes.string.isRequired,
   },
   data() {
@@ -59,6 +59,9 @@ export default {
     };
   },
   methods: {
+    ...mapMutations([
+      'setLocalUserSentMessage',
+    ]),
     handleSubmit(e) {
       if (typeof e !== 'undefined') e.preventDefault();
       if (
@@ -68,7 +71,7 @@ export default {
         this.$data.error =
         '名前とテキストのフィールド両方で入力してください';
       } else {
-        this.$emit('messageSent');
+        this.setLocalUserSentMessage(true);
         this.createMessage();
       }
     },
@@ -83,24 +86,26 @@ export default {
       this.$data.text = '';
       this.$data.error = '';
     },
+    sendMessage(message) {
+      socket.emit('send', message);
+    },
     checkKeys(e) {
       if (e.keyCode !== 13) return;
       if (e.metaKey === true || e.ctrlKey === true) {
         e.preventDefault();
         this.handleSubmit(e);
       }
-    }
+    },
+  },
+  computed: {
+    ...mapGetters([
+      'getUnreadMessagesCount',
+    ]),
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.outerContainer {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-}
-
 .innerContainer {
   padding-top: 0;
   padding-bottom: 0;
