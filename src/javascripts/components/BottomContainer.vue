@@ -63,6 +63,13 @@ export default {
   bottom: 0;
   z-index: 2;
   width: 100%;
+  height: 20vh;
+}
+
+@media (min-height: 850px) {
+  .outerContainer {
+    height: 12vh;
+  }
 }
 
 .snackbar {

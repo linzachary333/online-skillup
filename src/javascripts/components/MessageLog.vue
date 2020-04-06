@@ -121,12 +121,12 @@ export default {
 //
 .container {
   overflow-y: auto;
-  height: 85vh;
+  height: 80vh;
 }
 
 @media (min-height: 850px) {
   .container {
-    height: 90vh;
+    height: 88vh;
   }
 }
 
